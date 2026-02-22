@@ -1,4 +1,4 @@
-function exportData() {
+function exportData() { 
     const data = localStorage.getItem(Storage.KEY);
 
     if (!data) {
