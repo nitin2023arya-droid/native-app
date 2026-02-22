@@ -1,0 +1,6 @@
+{
+  "appId": "com.yourname.bullionplus",
+  "appName": "Bullion Plus Pro",
+  "webDir": "www",
+  "bundledWebRuntime": false
+}
