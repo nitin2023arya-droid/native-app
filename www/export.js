@@ -28,7 +28,9 @@ function exportData() {
 
 async function saveBackupWithCapacitor(data) {
     try {
-        const { Filesystem, Directory, Encoding } = Capacitor.Plugins;
+        const { Filesystem } = Capacitor.Plugins;
+        // Directory and Encoding are properties of Filesystem
+        const { Directory, Encoding } = Filesystem;
 
         await Filesystem.writeFile({
             path: 'bullion_pro_backup.json',
@@ -36,7 +38,6 @@ async function saveBackupWithCapacitor(data) {
             directory: Directory.Downloads,
             encoding: Encoding.UTF8,
         });
-
         alert('Backup saved to Downloads folder');
     } catch (error) {
         console.error('Error saving backup:', error);
