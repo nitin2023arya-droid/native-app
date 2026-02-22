@@ -381,30 +381,25 @@ doc.text(
     }
 }
 
-/**
- * Helper function to share PDF using Capacitor Share plugin
- */
 async function sharePDF(pdfBlob, filename) {
     try {
-        const { Filesystem, Directory, Share } = Capacitor.Plugins;
+        const { Filesystem, Share } = Capacitor.Plugins;
+        const { Directory } = Filesystem;  // Directory comes from Filesystem
 
-        // Convert blob to base64
         const reader = new FileReader();
         reader.onloadend = async function () {
-            const base64 = reader.result.split(',')[1]; // Remove data URL prefix
+            const base64 = reader.result.split(',')[1];
 
-            // Write to cache directory (no permission needed)
             const savedFile = await Filesystem.writeFile({
                 path: filename,
                 data: base64,
-                directory: Directory.Cache,
+                directory: Directory.Cache,  // Now Directory is defined
             });
 
-            // Share the file
             await Share.share({
                 title: 'Account Statement',
                 text: 'Customer account statement',
-                url: savedFile.uri,  // Capacitor 5 uses `uri`
+                url: savedFile.uri,
                 dialogTitle: 'Share via',
             });
 
