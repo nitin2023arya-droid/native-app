@@ -1,50 +1,57 @@
-// Ensure you have installed: npm install @capacitor/filesystem @capacitor/share
-import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
-import { Share } from '@capacitor/share';
-
 async function exportData() {
-    const data = localStorage.getItem('YOUR_KEY');
+    // 1. Get the data (Ensure your key matches exactly what you use in script.js)
+    const data = localStorage.getItem('YOUR_STORAGE_KEY'); 
 
     if (!data) {
         alert('No data to export');
         return;
     }
 
-    if (window.Capacitor?.isNativePlatform()) {
+    // 2. Check if running on Android/iOS via Capacitor
+    if (window.Capacitor && window.Capacitor.isNativePlatform()) {
         await saveAndShareBackup(data);
     } else {
-        // Browser fallback (Your existing code works great here)
+        // Browser fallback
         const blob = new Blob([data], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'backup.json';
+        a.download = 'bullion_pro_backup.json';
+        document.body.appendChild(a);
         a.click();
+        document.body.removeChild(a);
         URL.revokeObjectURL(url);
     }
 }
 
 async function saveAndShareBackup(data) {
     try {
+        // Access plugins via the global Capacitor object
+        const { Filesystem } = Capacitor.Plugins;
+        const { Share } = Capacitor.Plugins;
+
+        if (!Filesystem || !Share) {
+            throw new Error("Capacitor plugins not found. Did you run 'npx cap sync'?");
+        }
+
         const fileName = 'bullion_pro_backup.json';
         
-        // 1. Write to temporary cache directory
+        // Write to temporary cache
         const result = await Filesystem.writeFile({
             path: fileName,
             data: data,
-            directory: Directory.Cache, // Cache is safer for temporary transit
-            encoding: Encoding.UTF8,
+            directory: 'CACHE', // Use string constant for global access
+            encoding: 'utf8',
         });
 
-        // 2. Use Share Plugin so user can save to 'Files', 'Drive', or 'Downloads'
-        // This bypasses many strict Android/iOS permission issues
+        // Open Share sheet
         await Share.share({
-            title: 'Export Backup',
+            title: 'Bullion Plus Backup',
             url: result.uri,
         });
 
     } catch (error) {
-        console.error('Export failed', error);
-        alert('Export failed: ' + error.message);
+        console.error('Export failed:', error);
+        alert('Export error: ' + error.message);
     }
 }
