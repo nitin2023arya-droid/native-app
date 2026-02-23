@@ -1,63 +1,50 @@
+// Ensure you have installed: npm install @capacitor/filesystem @capacitor/share
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
-import { Capacitor } from '@capacitor/core';
+import { Share } from '@capacitor/share';
 
 async function exportData() {
-    const data = localStorage.getItem(Storage.KEY);
+    const data = localStorage.getItem('YOUR_KEY');
 
     if (!data) {
         alert('No data to export');
         return;
     }
 
-    // If running inside native app
-    if (Capacitor.isNativePlatform()) {
-        await saveBackupWithCapacitor(data);
+    if (window.Capacitor?.isNativePlatform()) {
+        await saveAndShareBackup(data);
     } else {
-        // Browser fallback
+        // Browser fallback (Your existing code works great here)
         const blob = new Blob([data], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
-
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'bullion_pro_backup.json';
-        document.body.appendChild(a);
+        a.download = 'backup.json';
         a.click();
-
-        document.body.removeChild(a);
         URL.revokeObjectURL(url);
     }
 }
 
-async function saveBackupWithCapacitor(data) {
+async function saveAndShareBackup(data) {
     try {
-        // Request permission (important for Android 11+)
-        const permission = await Filesystem.requestPermissions();
-
-        if (permission.publicStorage !== 'granted') {
-            alert('Storage permission denied');
-            return;
-        }
-
-        await Filesystem.writeFile({
-            path: 'bullion_pro_backup.json',
+        const fileName = 'bullion_pro_backup.json';
+        
+        // 1. Write to temporary cache directory
+        const result = await Filesystem.writeFile({
+            path: fileName,
             data: data,
-            directory: Directory.Documents,  // More reliable than Downloads
+            directory: Directory.Cache, // Cache is safer for temporary transit
             encoding: Encoding.UTF8,
         });
 
-        const uri = await Filesystem.getUri({
-            directory: Directory.Documents,
-            path: 'bullion_pro_backup.json'
+        // 2. Use Share Plugin so user can save to 'Files', 'Drive', or 'Downloads'
+        // This bypasses many strict Android/iOS permission issues
+        await Share.share({
+            title: 'Export Backup',
+            url: result.uri,
         });
 
-        console.log('Backup saved at:', uri.uri);
-
-        alert('Backup saved successfully');
-
     } catch (error) {
-        console.error('Export error:', error);
-        alert('Failed to save backup: ' + error.message);
+        console.error('Export failed', error);
+        alert('Export failed: ' + error.message);
     }
 }
-
-export { exportData };
