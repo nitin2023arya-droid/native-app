@@ -1,4 +1,4 @@
-function exportData() { 
+async function exportData() {
     const data = localStorage.getItem(Storage.KEY);
 
     if (!data) {
@@ -6,12 +6,8 @@ function exportData() {
         return;
     }
 
-    // Check if running inside Capacitor native app
-    if (window.Capacitor && window.Capacitor.isNativePlatform()) {
-        // Use Capacitor Filesystem plugin to save to Downloads
-        saveBackupWithCapacitor(data);
-    } else {
-        // Browser fallback: trigger download
+    // Browser fallback
+    if (!window.Capacitor || !window.Capacitor.isNativePlatform()) {
         const blob = new Blob([data], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
 
@@ -23,24 +19,24 @@ function exportData() {
 
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
+        return;
     }
-}
 
-async function saveBackupWithCapacitor(data) {
+    // Native Android / iOS
     try {
-        const { Filesystem } = Capacitor.Plugins;
-        // Directory and Encoding are properties of Filesystem
-        const { Directory, Encoding } = Filesystem;
+        const Filesystem = window.Capacitor.Plugins.Filesystem;
 
         await Filesystem.writeFile({
             path: 'bullion_pro_backup.json',
             data: data,
-            directory: Directory.Downloads,
-            encoding: Encoding.UTF8,
+            directory: 'DATA',      // safest internal directory
+            encoding: 'utf8'
         });
-        alert('Backup saved to Downloads folder');
+
+        alert('Backup saved successfully inside app storage');
+
     } catch (error) {
-        console.error('Error saving backup:', error);
-        alert('Failed to save backup: ' + error.message);
+        console.error('Export error:', error);
+        alert('Failed to save backup: ' + (error?.message || error));
     }
 }
