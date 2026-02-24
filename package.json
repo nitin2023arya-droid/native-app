@@ -4,8 +4,9 @@
   "description": "Bullion account management app",
   "main": "index.js",
   "scripts": {
-    "build": "npm run build:web && npx cap sync android",
-    "build:web": "vite build", 
+    "build": "vite build", 
+    "sync": "npx cap sync android",
+    "android": "npx cap open android",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
