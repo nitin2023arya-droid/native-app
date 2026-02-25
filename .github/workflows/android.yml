@@ -21,11 +21,13 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      - name: Build Web
-        run: npm run build
+      # ✅ ADD ANDROID FIRST
+      - name: Add Android Platform
+        run: npx cap add android
 
+      # ✅ THEN SYNC
       - name: Sync Capacitor
-        run: npx cap sync android
+        run: npx cap sync
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -33,7 +35,7 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      - name: Build APK
+      - name: Build Debug APK
         run: |
           cd android
           chmod +x gradlew
