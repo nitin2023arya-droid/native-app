@@ -1,8 +1,0 @@
-{
-  "appId": "com.bullion.pro",
-  "appName": "Bullion Pro",
-  "webDir": "www",
-  "server": {
-    "androidScheme": "https"
-  }
-}
