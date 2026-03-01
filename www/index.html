@@ -4,34 +4,36 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Bullion Plus Pro v3.3</title>
-    <link rel="stylesheet" href="styles.css">
+   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
 <header>
     <div id="nav-brand" style="font-weight:bold; cursor:pointer" onclick="ui.goToDashboard()">Bullion Plus</div>
-    <input
-        type="file"
-        id="import-file"
-        accept=".json"
-        hidden
-        onchange="importData(this.files[0])"
-    />
+   <input
+  type="file"
+  id="import-file"
+  accept=".json"
+  hidden
+  onchange="importData(this.files[0])"
+/>
+        
     <div id="header-actions"></div>
 </header>
 
 <main id="app-root"></main>
 <div id="modal-container" class="modal-overlay hidden"></div>
 
-
+ 
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="capacitor.js"></script>
+
 <script src="script.js"></script>
 <script src="export.js"></script>
 <script src="import.js"></script>
 <script src="pdf.js"></script>
 <script src="pdfModal.js"></script>
+
 
 </body>
 </html>
