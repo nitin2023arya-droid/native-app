@@ -1,0 +1,12 @@
+{
+  "appId": "com.bullionplus.pro",
+  "appName": "Bullion Plus Pro",
+  "webDir": "www",
+  "bundledWebRuntime": false,
+  "server": {
+    "androidScheme": "https"
+  },
+  "android": {
+    "allowMixedContent": true
+  }
+}
